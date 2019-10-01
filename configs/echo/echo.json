@@ -1,0 +1,22 @@
+{
+    "service": {
+        "port": ":6060",
+        "allowOrigin": "https://ancient.hatlonely.com",
+        "cookieSecure": true,
+        "cookieDomain": "ancient.hatlonely.com"
+    },
+    "logger": {
+        "infoLog": {
+            "filename": "log/ancient.info",
+            "maxAge": "24h"
+        },
+        "warnLog": {
+            "filename": "log/ancient.warn",
+            "maxAge": "24h"
+        },
+        "accessLog": {
+            "filename": "log/ancient.access",
+            "maxAge": "24h"
+        }
+    }
+}
