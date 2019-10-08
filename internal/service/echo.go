@@ -8,7 +8,7 @@ import (
 )
 
 type EchoReq struct {
-	Message string `form:"message`
+	Message string `form:"message"`
 }
 
 type EchoRes struct {
