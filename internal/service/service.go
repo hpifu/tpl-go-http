@@ -53,13 +53,15 @@ func Decorator(inner func(*gin.Context) (interface{}, interface{}, int, error)) 
 		}
 
 		AccessLog.WithFields(logrus.Fields{
-			"host":   c.Request.Host,
-			"url":    c.Request.URL.String(),
-			"req":    req,
-			"res":    res,
-			"rid":    rid,
-			"err":    err,
-			"status": status,
+			"client":    c.ClientIP(),
+			"userAgent": c.GetHeader("User-Agent"),
+			"host":      c.Request.Host,
+			"url":       c.Request.URL.String(),
+			"req":       req,
+			"res":       res,
+			"rid":       rid,
+			"err":       err,
+			"status":    status,
 		}).Info()
 	}
 }
