@@ -4,6 +4,9 @@ go 1.12
 
 replace (
 	cloud.google.com/go => github.com/googleapis/google-cloud-go v0.0.0-20190603211518-c8433c9aaceb
+	go.uber.org/atomic => github.com/uber-go/atomic v1.4.1-0.20190731194737-ef0d20d85b01
+	go.uber.org/multierr => github.com/uber-go/multierr v1.2.0
+	go.uber.org/zap => github.com/uber-go/zap v1.10.1-0.20190926184545-d8445f34b4ae
 	golang.org/x/crypto => github.com/golang/crypto v0.0.0-20190605123033-f99c8df09eb5
 	golang.org/x/exp => github.com/golang/exp v0.0.0-20190510132918-efd6b22b2522
 	golang.org/x/image => github.com/golang/image v0.0.0-20190523035834-f03afa92d3ff

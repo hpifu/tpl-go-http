@@ -99,7 +99,6 @@ vendor: go.mod
 test: vendor
 	@echo "Run unit tests"
 	- cd internal && go test -cover ./...
-	- cd pkg && go test -cover ./...
 
 .PHONY: behave
 behave: output
@@ -108,10 +107,10 @@ behave: output
 .PHONY: stat
 stat: cloc gocyclo
 	@echo "code statistics"
-	@cloc pkg Makefile --by-file
+	@cloc internal Makefile --by-file
 	@echo "circle complexity statistics"
-	@gocyclo pkg
-	@gocyclo pkg | awk '{sum+=$$1}END{printf("complexity: %s", sum)}'
+	@gocyclo internal
+	@gocyclo internal | awk '{sum+=$$1}END{printf("complexity: %s", sum)}'
 
 .PHONY: clean
 clean:

@@ -1,6 +1,6 @@
 {
     "service": {
-        "port": ":6060",
+        "port": ":7060",
         "allowOrigin": "https://ancient.hatlonely.com",
         "cookieSecure": true,
         "cookieDomain": "ancient.hatlonely.com"
