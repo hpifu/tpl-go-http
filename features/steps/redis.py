@@ -25,7 +25,6 @@ def step_impl(context, key):
 def step_impl(context, key):
     obj = json.loads(context.text)
     val = context.redis_client.get(key)
-    print(val)
     result = json.loads(val)
     for key in obj:
         assert_that(result[key], equal_to(obj[key]))
@@ -35,3 +34,10 @@ def step_impl(context, key):
 def step_impl(context, key):
     res = context.redis_client.get(key)
     assert_that(res, equal_to(None))
+
+
+@then('redis exist "{key:str}"')
+def step_impl(context, key):
+    res = context.redis_client.get(key)
+    print(res)
+    assert_that(res, not_none)
