@@ -19,7 +19,7 @@ func (s *Service) Echo(c *gin.Context) (interface{}, interface{}, int, error) {
 	req := &EchoReq{}
 
 	if err := c.Bind(req); err != nil {
-		return nil, nil, http.StatusBadRequest, fmt.Errorf("bind uri failed. err: [%v]", err)
+		return nil, nil, http.StatusBadRequest, fmt.Errorf("bind failed. err: [%v]", err)
 	}
 
 	return req, &EchoRes{
