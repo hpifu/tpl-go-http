@@ -1,21 +1,21 @@
 {
     "service": {
         "port": ":7060",
-        "allowOrigin": "https://ancient.hatlonely.com",
+        "allowOrigin": "https://echo.hatlonely.com",
         "cookieSecure": true,
-        "cookieDomain": "ancient.hatlonely.com"
+        "cookieDomain": "echo.hatlonely.com"
     },
     "logger": {
         "infoLog": {
-            "filename": "log/ancient.info",
+            "filename": "log/echo.info",
             "maxAge": "24h"
         },
         "warnLog": {
-            "filename": "log/ancient.warn",
+            "filename": "log/echo.warn",
             "maxAge": "24h"
         },
         "accessLog": {
-            "filename": "log/ancient.access",
+            "filename": "log/echo.access",
             "maxAge": "24h"
         }
     }
