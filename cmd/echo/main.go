@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hpifu/go-kit/hhttp"
 	"github.com/hpifu/go-kit/logger"
 	"github.com/hpifu/tpl-go-http/internal/service"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -87,10 +88,11 @@ func main() {
 	})
 
 	// set handler
+	d := hhttp.NewGinHttpDecorator(infoLog, warnLog, accessLog)
 	r.GET("/ping", func(ctx *gin.Context) {
 		ctx.String(200, "ok")
 	})
-	r.GET("/echo", service.Decorator(svc.Echo))
+	r.GET("/echo", d.Decorate(svc.Echo))
 
 	infoLog.Infof("%v init success, port [%v]", os.Args[0], config.GetString("service.port"))
 

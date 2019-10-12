@@ -86,6 +86,8 @@ github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpO
 github.com/hpifu/go-account v1.2.0/go.mod h1:qPUOaBOwRFh6KGt+Sv9xdBotatqKGDgXUCHNqzWW5KU=
 github.com/hpifu/go-kit v1.3.0 h1:BAI2164quzfzRDXP48EPM+j1PFBVKnqzbGO8IP0r7ps=
 github.com/hpifu/go-kit v1.3.0/go.mod h1:Ae+wIEIc59r1iAuTIm7mTJoD+s0qWYt26rjmRlCHxPk=
+github.com/hpifu/go-kit v1.6.1 h1:gflyRBg3sEVugS9Rqp8QExx+Ya17Hsc8O6zZBa2azkY=
+github.com/hpifu/go-kit v1.6.1/go.mod h1:IQSv/sIhi4EAdbY+gDhWfP42s3suOGCd3mVwdO4htj8=
 github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 h1:IPJ3dvxmJ4uczJe5YQdrYB16oTJlGSC/OyZDqUk9xX4=
 github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869/go.mod h1:cJ6Cj7dQo+O6GJNiMx+Pa94qKj+TG8ONdKHgMNIyyag=
 github.com/jinzhu/gorm v1.9.8/go.mod h1:bdqTT3q6dhSph2K3pWxrHP6nqxuAp2yQ3KFtc3U3F84=
