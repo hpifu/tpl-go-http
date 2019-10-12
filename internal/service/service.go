@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/hex"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -60,7 +61,7 @@ func Decorator(inner func(*gin.Context) (interface{}, interface{}, int, error)) 
 			"req":       req,
 			"res":       res,
 			"rid":       rid,
-			"err":       err,
+			"err":       fmt.Sprintf("%v", err),
 			"status":    status,
 		}).Info()
 	}

@@ -1,14 +1,20 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hpifu/go-kit/logger"
 	"github.com/hpifu/tpl-go-http/internal/service"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/spf13/viper"
 )
 
@@ -89,7 +95,30 @@ func main() {
 	infoLog.Infof("%v init success, port [%v]", os.Args[0], config.GetString("service.port"))
 
 	// run server
-	if err := r.Run(config.GetString("service.port")); err != nil {
-		panic(err)
+	server := &http.Server{
+		Addr:    config.GetString("service.port"),
+		Handler: r,
 	}
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
+
+	// graceful quit
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	infoLog.Infof("%v shutdown ...", os.Args[0])
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		warnLog.Errorf("%v shutdown fail or timeout", os.Args[0])
+		return
+	}
+	warnLog.Out.(*rotatelogs.RotateLogs).Close()
+	accessLog.Out.(*rotatelogs.RotateLogs).Close()
+	infoLog.Errorf("%v shutdown success", os.Args[0])
+	infoLog.Out.(*rotatelogs.RotateLogs).Close()
 }
