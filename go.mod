@@ -26,6 +26,7 @@ replace (
 )
 
 require (
+	github.com/gin-contrib/cors v1.3.0 // indirect
 	github.com/gin-gonic/gin v1.4.0
 	github.com/hpifu/go-kit v1.6.1
 	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible

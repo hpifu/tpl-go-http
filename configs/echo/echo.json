@@ -1,7 +1,9 @@
 {
     "service": {
         "port": ":7060",
-        "allowOrigin": "https://echo.hatlonely.com",
+        "allowOrigins": [
+            "https://echo.hatlonely.com"
+        ],
         "cookieSecure": true,
         "cookieDomain": "echo.hatlonely.com"
     },
