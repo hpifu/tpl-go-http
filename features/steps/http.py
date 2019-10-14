@@ -28,21 +28,23 @@ def step_impl(context, method, path):
         obj["params"] = {}
     if "json" not in obj:
         obj["json"] = {}
+    if "header" not in obj:
+        obj["header"] = {}
     if method == "GET":
         context.res = requests.get(
             "{}{}".format(context.config["url"], path),
-            params=obj["params"], json=obj["json"]
+            params=obj["params"], json=obj["json"], headers=obj["header"]
         )
     if method == "PUT":
         context.res = requests.put(
             "{}{}".format(context.config["url"], path),
-            params=obj["params"], json=obj["json"]
+            params=obj["params"], json=obj["json"], headers=obj["header"]
         )
     if method == "POST":
         if "file" in obj:
             context.res = requests.post(
                 "{}{}".format(context.config["url"], path),
-                params=obj["params"], json=obj["json"],
+                params=obj["params"], json=obj["json"], headers=obj["header"],
                 files={
                     'file': open(obj["file"], 'rb')
                 }
@@ -50,7 +52,7 @@ def step_impl(context, method, path):
         else:
             context.res = requests.post(
                 "{}{}".format(context.config["url"], path),
-                params=obj["params"], json=obj["json"]
+                params=obj["params"], json=obj["json"], headers=obj["header"]
             )
 
 
