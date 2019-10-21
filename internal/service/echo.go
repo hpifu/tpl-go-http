@@ -15,7 +15,7 @@ type EchoRes struct {
 	Message string `form:"message" json:"message"`
 }
 
-func (s *Service) Echo(c *gin.Context) (interface{}, interface{}, int, error) {
+func (s *Service) Echo(rid string, c *gin.Context) (interface{}, interface{}, int, error) {
 	req := &EchoReq{}
 
 	if err := c.Bind(req); err != nil {
