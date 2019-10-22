@@ -24,6 +24,9 @@ config = {
         "allowOrigins": ["http://127.0.0.1:4000"],
         "cookieDomain": "127.0.0.1"
     },
+    "es": {
+        "uri": "http://test-elasticsearch:9200"
+    },
     "api": {
         "account": "test-go-account:16060",
     },
@@ -63,6 +66,7 @@ def deploy():
     cf["service"]["cookieSecure"] = config["service"]["cookieSecure"]
     cf["service"]["cookieDomain"] = config["service"]["cookieDomain"]
     cf["service"]["allowOrigins"] = config["service"]["allowOrigins"]
+    cf["es"]["uri"] = config["es"]["uri"]
     # cf["api"]["account"] = config["api"]["account"]
     # cf["mysqldb"]["uri"] = "{user}:{password}@tcp({host}:{port})/{db}?charset=utf8&parseTime=True&loc=Local".format(
     #     user=config["mysqldb"]["user"],

@@ -7,6 +7,9 @@
         "cookieSecure": true,
         "cookieDomain": "echo.hatlonely.com"
     },
+    "es": {
+        "uri": "http://elasticsearch:9200"
+    },
     "logger": {
         "infoLog": {
             "filename": "log/echo.info",

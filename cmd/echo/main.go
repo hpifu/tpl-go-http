@@ -17,7 +17,10 @@ import (
 	"github.com/hpifu/go-kit/logger"
 	"github.com/hpifu/tpl-go-http/internal/service"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/olivere/elastic/v7"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gopkg.in/sohlich/elogrus.v7"
 )
 
 // AppVersion name
@@ -48,27 +51,29 @@ func main() {
 	}
 
 	// init logger
-	infoLog, err := logger.NewTextLoggerWithViper(config.Sub("logger.infoLog"))
+	infoLog, warnLog, accessLog, err := logger.NewLoggerGroupWithViper(config.Sub("logger"))
 	if err != nil {
 		panic(err)
 	}
-	warnLog, err := logger.NewTextLoggerWithViper(config.Sub("logger.warnLog"))
+	client, err := elastic.NewClient(
+		elastic.SetURL(config.GetString("es.uri")),
+		elastic.SetSniff(false),
+	)
 	if err != nil {
 		panic(err)
 	}
-	accessLog, err := logger.NewJsonLoggerWithViper(config.Sub("logger.accessLog"))
+	hook, err := elogrus.NewAsyncElasticHook(client, "go-tech", logrus.InfoLevel, "go-tech-log")
 	if err != nil {
 		panic(err)
 	}
-	service.InfoLog = infoLog
-	service.WarnLog = warnLog
-	service.AccessLog = accessLog
+	accessLog.Hooks.Add(hook)
 
 	secure := config.GetBool("service.cookieSecure")
 	domain := config.GetString("service.cookieDomain")
 	origins := config.GetStringSlice("service.allowOrigins")
 	// init services
 	svc := service.NewService(secure, domain)
+	svc.SetLogger(infoLog, warnLog, accessLog)
 
 	// init gin
 	gin.SetMode(gin.ReleaseMode)
@@ -113,8 +118,8 @@ func main() {
 		warnLog.Errorf("%v shutdown fail or timeout", os.Args[0])
 		return
 	}
-	warnLog.Out.(*rotatelogs.RotateLogs).Close()
-	accessLog.Out.(*rotatelogs.RotateLogs).Close()
+	_ = warnLog.Out.(*rotatelogs.RotateLogs).Close()
+	_ = accessLog.Out.(*rotatelogs.RotateLogs).Close()
 	infoLog.Errorf("%v shutdown success", os.Args[0])
-	infoLog.Out.(*rotatelogs.RotateLogs).Close()
+	_ = infoLog.Out.(*rotatelogs.RotateLogs).Close()
 }
