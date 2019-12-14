@@ -3,11 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/hpifu/go-kit/hconf"
 	"github.com/hpifu/go-kit/hdefault"
 	"github.com/hpifu/go-kit/henv"
 	"github.com/hpifu/go-kit/hflag"
+	"github.com/hpifu/go-kit/hhttp"
 	"github.com/hpifu/go-kit/hrule"
+	"github.com/hpifu/go-kit/logger"
+	"github.com/hpifu/tpl-go-http/internal/service"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/sohlich/elogrus.v7"
@@ -16,13 +22,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/hpifu/go-kit/hhttp"
-	"github.com/hpifu/go-kit/logger"
-	"github.com/hpifu/tpl-go-http/internal/service"
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 )
 
 // AppVersion name
