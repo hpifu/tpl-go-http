@@ -6,7 +6,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/hpifu/go-kit/hconf"
-	"github.com/hpifu/go-kit/hdefault"
+	"github.com/hpifu/go-kit/hdef"
 	"github.com/hpifu/go-kit/henv"
 	"github.com/hpifu/go-kit/hflag"
 	"github.com/hpifu/go-kit/hhttp"
@@ -60,20 +60,20 @@ func main() {
 
 	// load config
 	options := &Options{}
-	if err := hdefault.SetDefault(options); err != nil {
+	if err := hdef.SetDefault(options); err != nil {
 		panic(err)
 	}
-	config, err := hconf.NewHConfWithFile(*configfile)
+	config, err := hconf.New("json", "local", *configfile)
 	if err != nil {
 		panic(err)
 	}
 	if err := config.Unmarshal(options); err != nil {
 		panic(err)
 	}
-	if err := hflag.Unmarshal(options); err != nil {
+	if err := henv.NewHEnv("ECHO").Unmarshal(options); err != nil {
 		panic(err)
 	}
-	if err := henv.NewHEnv("ECHO").Unmarshal(options); err != nil {
+	if err := hflag.Unmarshal(options); err != nil {
 		panic(err)
 	}
 	if err := hrule.Evaluate(options); err != nil {
