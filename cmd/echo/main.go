@@ -2,61 +2,96 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
-	"strings"
-	"syscall"
-	"time"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/hpifu/go-kit/hconf"
+	"github.com/hpifu/go-kit/hdef"
+	"github.com/hpifu/go-kit/henv"
+	"github.com/hpifu/go-kit/hflag"
 	"github.com/hpifu/go-kit/hhttp"
+	"github.com/hpifu/go-kit/hrule"
 	"github.com/hpifu/go-kit/logger"
 	"github.com/hpifu/tpl-go-http/internal/service"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"gopkg.in/sohlich/elogrus.v7"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 // AppVersion name
 var AppVersion = "unknown"
 
+type Options struct {
+	Service struct {
+		Port         string   `hflag:"usage: service port" hdef:":1234"`
+		AllowOrigins []string `hflag:"usage: allow origins" hdef:"127.0.0.1"`
+		CookieSecure bool     `hflag:"usage: http or https"`
+		CookieDomain string   `hflag:"usage: cookie domain"`
+	}
+	Es struct {
+		Uri string `hflag:"usage: elasticsearch address"`
+	}
+	Logger struct {
+		Info   logger.Options
+		Warn   logger.Options
+		Access logger.Options
+	}
+}
+
 func main() {
-	version := flag.Bool("v", false, "print current version")
-	configfile := flag.String("c", "configs/echo.json", "config file path")
-	flag.Parse()
+	version := hflag.Bool("v", false, "print current version")
+	configfile := hflag.String("c", "configs/echo.json", "config file path")
+	if err := hflag.Bind(&Options{}); err != nil {
+		panic(err)
+	}
+	if err := hflag.Parse(); err != nil {
+		panic(err)
+	}
 	if *version {
 		fmt.Println(AppVersion)
 		os.Exit(0)
 	}
 
 	// load config
-	config := viper.New()
-	config.SetEnvPrefix("account")
-	config.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	config.AutomaticEnv()
-	config.SetConfigType("json")
-	fp, err := os.Open(*configfile)
+	options := &Options{}
+	if err := hdef.SetDefault(options); err != nil {
+		panic(err)
+	}
+	config, err := hconf.New("json", "local", *configfile)
 	if err != nil {
 		panic(err)
 	}
-	err = config.ReadConfig(fp)
-	if err != nil {
+	if err := config.Unmarshal(options); err != nil {
+		panic(err)
+	}
+	if err := henv.NewHEnv("ECHO").Unmarshal(options); err != nil {
+		panic(err)
+	}
+	if err := hflag.Unmarshal(options); err != nil {
+		panic(err)
+	}
+	if err := hrule.Evaluate(options); err != nil {
 		panic(err)
 	}
 
 	// init logger
-	infoLog, warnLog, accessLog, err := logger.NewLoggerGroupWithViper(config.Sub("logger"))
+	logs, err := logger.NewLoggerGroup([]*logger.Options{
+		&options.Logger.Info, &options.Logger.Warn, &options.Logger.Access,
+	})
 	if err != nil {
 		panic(err)
 	}
+	infoLog := logs[0]
+	warnLog := logs[1]
+	accessLog := logs[2]
 	client, err := elastic.NewClient(
-		elastic.SetURL(config.GetString("es.uri")),
+		elastic.SetURL(options.Es.Uri),
 		elastic.SetSniff(false),
 	)
 	if err != nil {
@@ -68,11 +103,8 @@ func main() {
 	}
 	accessLog.Hooks.Add(hook)
 
-	secure := config.GetBool("service.cookieSecure")
-	domain := config.GetString("service.cookieDomain")
-	origins := config.GetStringSlice("service.allowOrigins")
 	// init services
-	svc := service.NewService(secure, domain)
+	svc := service.NewService(options.Service.CookieSecure, options.Service.CookieDomain)
 	svc.SetLogger(infoLog, warnLog, accessLog)
 
 	// init gin
@@ -80,7 +112,7 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     origins,
+		AllowOrigins:     options.Service.AllowOrigins,
 		AllowMethods:     []string{"PUT", "POST", "GET", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Accept", "Cache-Control", "X-Requested-With"},
 		AllowCredentials: true,
@@ -93,11 +125,11 @@ func main() {
 	})
 	r.GET("/echo", d.Decorate(svc.Echo))
 
-	infoLog.Infof("%v init success, port [%v]", os.Args[0], config.GetString("service.port"))
+	infoLog.Infof("%v init success, port [%v]", os.Args[0], options.Service.Port)
 
 	// run server
 	server := &http.Server{
-		Addr:    config.GetString("service.port"),
+		Addr:    options.Service.Port,
 		Handler: r,
 	}
 	go func() {
@@ -118,8 +150,7 @@ func main() {
 		warnLog.Errorf("%v shutdown fail or timeout", os.Args[0])
 		return
 	}
-	_ = warnLog.Out.(*rotatelogs.RotateLogs).Close()
-	_ = accessLog.Out.(*rotatelogs.RotateLogs).Close()
-	infoLog.Errorf("%v shutdown success", os.Args[0])
-	_ = infoLog.Out.(*rotatelogs.RotateLogs).Close()
+	for _, log := range logs {
+		_ = log.Out.(*rotatelogs.RotateLogs).Close()
+	}
 }

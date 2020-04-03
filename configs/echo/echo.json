@@ -11,15 +11,18 @@
         "uri": "http://elasticsearch:9200"
     },
     "logger": {
-        "infoLog": {
+        "info": {
+            "formatter": "text",
             "filename": "log/echo.info",
             "maxAge": "24h"
         },
-        "warnLog": {
+        "warn": {
+            "formatter": "text",
             "filename": "log/echo.warn",
             "maxAge": "24h"
         },
-        "accessLog": {
+        "access": {
+            "formatter": "json",
             "filename": "log/echo.access",
             "maxAge": "24h"
         }
