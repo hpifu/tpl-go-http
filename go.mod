@@ -27,7 +27,7 @@ replace (
 
 require (
 	github.com/gin-contrib/cors v1.3.0
-	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-gonic/gin v1.7.0
 	github.com/hpifu/go-kit v1.7.7-0.20191217184605-f0969e951d89
 	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible
 	github.com/olivere/elastic/v7 v7.0.4
